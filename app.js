@@ -1,6 +1,7 @@
 const cursorGlow = document.querySelector('.cursor-glow');
 const revealNodes = [...document.querySelectorAll('section, .project-card, .about-panel, .skill-cloud, .contact')];
 const tiltCards = [...document.querySelectorAll('[data-tilt]')];
+const progress = document.getElementById('progress');
 
 function onPointerMove(event) {
   if (!cursorGlow) return;
@@ -49,6 +50,34 @@ function setupTilt() {
   });
 }
 
+function setupMagnetic() {
+  document.querySelectorAll('.magnetic').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = `translate(${x * 8}px, ${y * 8}px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'translate(0, 0)';
+    });
+  });
+}
+
+function setupScrollProgress() {
+  if (!progress) return;
+  function update() {
+    const doc = document.documentElement;
+    const total = doc.scrollHeight - doc.clientHeight;
+    const pct = total <= 0 ? 0 : (doc.scrollTop / total) * 100;
+    progress.style.width = `${pct}%`;
+  }
+  addEventListener('scroll', update, { passive: true });
+  update();
+}
+
 window.addEventListener('pointermove', onPointerMove);
 setupReveal();
 setupTilt();
+setupMagnetic();
+setupScrollProgress();
